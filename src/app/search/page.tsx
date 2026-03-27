@@ -3,6 +3,7 @@
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
+import { useLang } from "@/lib/LangContext";
 import { packages } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { Star, SlidersHorizontal, ArrowRight } from "lucide-react";
@@ -18,6 +19,7 @@ export default function SearchPage() {
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useLang();
   const destFilter = searchParams.get("dest") || "";
 
   const [destination, setDestination] = useState(destFilter);
@@ -52,7 +54,7 @@ function SearchContent() {
       <main className="pt-20 min-h-screen bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold mb-6">
-            {destination ? `Packages to ${destination}` : "All Packages"}
+            {destination ? `${t.search.packagesTo} ${destination}` : t.search.allPackages}
           </h1>
 
           <div className="flex flex-col lg:flex-row gap-8">
@@ -61,18 +63,18 @@ function SearchContent() {
               <div className="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
                 <div className="flex items-center gap-2 mb-6">
                   <SlidersHorizontal className="w-5 h-5 text-primary" />
-                  <h2 className="font-bold text-lg">Filters</h2>
+                  <h2 className="font-bold text-lg">{t.search.filters}</h2>
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-2">Destination</label>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">{t.search.destination}</label>
                     <select
                       value={destination}
                       onChange={(e) => setDestination(e.target.value)}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     >
-                      <option value="">All destinations</option>
+                      <option value="">{t.search.allDestinations}</option>
                       {allDestinations.map((d) => (
                         <option key={d} value={d}>{d}</option>
                       ))}
@@ -81,7 +83,7 @@ function SearchContent() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 block mb-2">
-                      Max price: {formatPrice(maxPrice)}
+                      {t.search.maxPrice}: {formatPrice(maxPrice)}
                     </label>
                     <input
                       type="range"
@@ -95,7 +97,7 @@ function SearchContent() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-2">Min hotel stars</label>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">{t.search.minHotelStars}</label>
                     <div className="flex gap-2">
                       {[0, 3, 4, 5].map((s) => (
                         <button
@@ -105,22 +107,22 @@ function SearchContent() {
                             minStars === s ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                         >
-                          {s === 0 ? "Any" : `${s}+`}
+                          {s === 0 ? t.search.any : `${s}+`}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-2">Sort by</label>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">{t.search.sortBy}</label>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as "price" | "rating" | "duration")}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     >
-                      <option value="price">Price (low to high)</option>
-                      <option value="rating">Rating (high to low)</option>
-                      <option value="duration">Duration (short to long)</option>
+                      <option value="price">{t.search.priceLowHigh}</option>
+                      <option value="rating">{t.search.ratingHighLow}</option>
+                      <option value="duration">{t.search.durationShortLong}</option>
                     </select>
                   </div>
 
@@ -131,7 +133,7 @@ function SearchContent() {
                       onChange={(e) => setShowExclusiveOnly(e.target.checked)}
                       className="w-4 h-4 accent-primary rounded"
                     />
-                    <span className="text-sm font-medium text-gray-700">Exclusive deals only</span>
+                    <span className="text-sm font-medium text-gray-700">{t.search.exclusiveOnly}</span>
                   </label>
                 </div>
               </div>
@@ -139,7 +141,7 @@ function SearchContent() {
 
             {/* Results */}
             <div className="flex-1">
-              <p className="text-sm text-gray-500 mb-4">{filtered.length} packages found</p>
+              <p className="text-sm text-gray-500 mb-4">{filtered.length} {t.search.packagesFound}</p>
               <div className="space-y-4">
                 {filtered.map((pkg) => (
                   <button
@@ -151,7 +153,7 @@ function SearchContent() {
                       <img src={pkg.image} alt={pkg.name} className="w-full h-48 md:h-full object-cover" />
                       {pkg.isExclusive && (
                         <span className="absolute top-3 left-3 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
-                          EXCLUSIVE
+                          {t.landing.exclusive}
                         </span>
                       )}
                     </div>
@@ -159,7 +161,7 @@ function SearchContent() {
                       <div>
                         <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
                         <p className="text-sm text-gray-500 mb-3">
-                          {pkg.destination}, {pkg.destinationCountry} · {pkg.duration} days · {pkg.airline}
+                          {pkg.destination}, {pkg.destinationCountry} · {pkg.duration} {t.landing.days} · {pkg.airline}
                         </p>
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-sm font-medium text-gray-700">{pkg.hotel}</span>
@@ -174,7 +176,7 @@ function SearchContent() {
                             <span key={inc} className="bg-primary/5 text-primary text-xs px-2.5 py-1 rounded-full">{inc}</span>
                           ))}
                           {pkg.inclusions.length > 4 && (
-                            <span className="text-xs text-gray-400">+{pkg.inclusions.length - 4} more</span>
+                            <span className="text-xs text-gray-400">+{pkg.inclusions.length - 4}</span>
                           )}
                         </div>
                       </div>
@@ -182,12 +184,12 @@ function SearchContent() {
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 fill-accent text-accent" />
                           <span className="font-medium">{pkg.rating}</span>
-                          <span className="text-sm text-gray-400">({pkg.reviews} reviews)</span>
+                          <span className="text-sm text-gray-400">({pkg.reviews} {t.search.reviews})</span>
                         </div>
                         <div className="flex items-center gap-3">
                           <div className="text-right">
                             <span className="text-2xl font-bold text-primary">{formatPrice(pkg.retailPrice)}</span>
-                            <span className="text-sm text-gray-500 ml-1">/ person</span>
+                            <span className="text-sm text-gray-500 ml-1">{t.landing.perPerson}</span>
                           </div>
                           <ArrowRight className="w-5 h-5 text-primary" />
                         </div>
@@ -199,8 +201,8 @@ function SearchContent() {
 
               {filtered.length === 0 && (
                 <div className="text-center py-16">
-                  <p className="text-gray-400 text-lg">No packages match your filters.</p>
-                  <p className="text-gray-400 text-sm mt-1">Try adjusting your search criteria.</p>
+                  <p className="text-gray-400 text-lg">{t.search.noResults}</p>
+                  <p className="text-gray-400 text-sm mt-1">{t.search.noResultsHint}</p>
                 </div>
               )}
             </div>

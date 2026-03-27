@@ -3,20 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Plane, MessageSquare, LayoutDashboard, Users, Building2, ClipboardList } from "lucide-react";
-
-const navItems = [
-  { href: "/", label: "Home", icon: Plane },
-  { href: "/search", label: "Packages", icon: Plane },
-  { href: "/chat", label: "AI Assistant", icon: MessageSquare },
-  { href: "/internal/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/internal/crm", label: "CRM", icon: Users },
-  { href: "/internal/tasks", label: "Tasks", icon: ClipboardList },
-  { href: "/b2b/catalog", label: "B2B Portal", icon: Building2 },
-];
+import { useLang } from "@/lib/LangContext";
+import { Plane, MessageSquare, LayoutDashboard, Users, Building2, ClipboardList, Globe } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { locale, setLocale, t } = useLang();
+
+  const navItems = [
+    { href: "/", label: t.nav.home, icon: Plane },
+    { href: "/search", label: t.nav.packages, icon: Plane },
+    { href: "/chat", label: t.nav.aiAssistant, icon: MessageSquare },
+    { href: "/internal/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
+    { href: "/internal/crm", label: t.nav.crm, icon: Users },
+    { href: "/internal/tasks", label: t.nav.tasks, icon: ClipboardList },
+    { href: "/b2b/catalog", label: t.nav.b2bPortal, icon: Building2 },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -52,6 +54,13 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLocale(locale === "en" ? "ru" : "en")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-gray-500" />
+              {locale === "en" ? "RU" : "EN"}
+            </button>
             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
               T
             </div>
